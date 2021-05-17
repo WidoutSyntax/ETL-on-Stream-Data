@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<etl    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.etl.org/etlSchema"
+        xsi:schemaLocation="http://www.etl.org/etlSchema ../schemaAndXML/ETLSchema.xsd">
+
+    <extract>
+        <csv-extract sourceId="S1">
+            <file-path>./datafiles/NSE_Stocks.csv</file-path>
+            <separator>,</separator>
+            <windowsize>5</windowsize>
+        </csv-extract>
+        <csv-extract sourceId="S2">
+            <file-path>./datafiles/BSE_Stocks.csv</file-path>
+            <separator>,</separator>
+            <windowsize>5</windowsize>
+        </csv-extract>
+    </extract>
+    
+    <transformations>
+        <!--Operations done for source 1 --> 
+        <mapping>
+            <input inputId="I11" sourceId="S1">CURR_PRICE</input>
+            <output outputId="O11">MAPPED_CURR_PRICE</output>
+            <map>
+                <from>#N/A</from>
+                <to>NaN</to>
+            </map>
+        </mapping>
+        <mapping>
+            <input inputId="I12" sourceId="S1">OPEN</input>
+            <output outputId="O12">MAPPED_OPEN</output>
+            <map>
+                <from>#N/A</from>
+                <to>NaN</to>
+            </map>
+        </mapping>
+        <mapping>
+            <input inputId="I13" sourceId="S1">HIGH</input>
+            <output outputId="O13">MAPPED_HIGH</output>
+            <map>
+                <from>#N/A</from>
+                <to>NaN</to>
+            </map>
+        </mapping>
+        <mapping>
+            <input inputId="I14" sourceId="S1">LOW</input>
+            <output outputId="O14">MAPPED_LOW</output>
+            <map>
+                <from>#N/A</from>
+                <to>NaN</to>
+            </map>
+        </mapping>
+        <mapping>
+            <input inputId="I15" sourceId="S1">PREV_CLOSE</input>
+            <output outputId="O15">MAPPED_PREV_CLOSE</output>
+            <map>
+                <from>#N/A</from>
+                <to>NaN</to>
+            </map>
+        </mapping>
+        
+        <conversion>
+            <formula>
+                <input inputId="I16">O13</input>
+                <input inputId="I17">O14</input>
+                <output outputId="O16">RANGE</output>
+                <expression>( @I16 - @I17 )</expression>
+            </formula>
+            <formula>
+                <input inputId="I17">O11</input>
+                <input inputId="I18">O15</input>
+                <output outputId="O17">CHANGE_PER</output>
+                <expression>( ( ( @I17 - @I18 ) / @I18 ) * #100 )</expression>
+            </formula>
+            <abs>
+                <input inputId="I19">O16</input>
+                <output outputId="O19">ABS_RANGE</output>
+            </abs>
+            <floor>
+                <input inputId="I200">O17</input>
+                <output outputId="O200">FLOOR_CHANGE_PER</output>
+            </floor>
+        </conversion>  
+        
+        
+        <!--Operations done for source 2 -->
+        <mapping>
+            <input inputId="I21" sourceId="S2">CURR_PRICE</input>
+            <output outputId="O21">mapped_curr_price</output>
+            <map>
+                <from>#N/A</from>
+                <to>NaN</to>
+            </map>
+        </mapping>
+        <mapping>
+            <input inputId="I22" sourceId="S2">OPEN</input>
+            <output outputId="O22">mapped_open</output>
+            <map>
+                <from>#N/A</from>
+                <to>NaN</to>
+            </map>
+        </mapping>
+        <mapping>
+            <input inputId="I23" sourceId="S2">HIGH</input>
+            <output outputId="O23">mapped_high</output>
+            <map>
+                <from>#N/A</from>
+                <to>NaN</to>
+            </map>
+        </mapping>
+        <mapping>
+            <input inputId="I24" sourceId="S2">LOW</input>
+            <output outputId="O24">mapped_low</output>
+            <map>
+                <from>#N/A</from>
+                <to>NaN</to>
+            </map>
+        </mapping>
+        <mapping>
+            <input inputId="I25" sourceId="S2">PREV_CLOSE</input>
+            <output outputId="O25">mapped_prev_close</output>
+            <map>
+                <from>#N/A</from>
+                <to>NaN</to>
+            </map>
+        </mapping>
+        
+        <conversion>
+            <formula>
+                <input inputId="I26">O23</input>
+                <input inputId="I27">O24</input>
+                <output outputId="O26">RANGE</output>
+                <expression>( @I26 - @I27 )</expression>
+            </formula>
+            <formula>
+                <input inputId="I27">O21</input>
+                <input inputId="I28">O25</input>
+                <output outputId="O27">CHANGE_PER</output>
+                <expression>( ( ( @I27 - @I28 ) / @I28 ) * #100 )</expression>
+            </formula>
+            <abs>
+                <input inputId="I29">O26</input>
+                <output outputId="O29">ABS_RANGE</output>
+            </abs>
+        </conversion>  
+        
+        <merge>
+            <input inputId="I31" sourceId="S1">STOCK</input>
+            <input inputId="I32" sourceId="S2">STOCK</input>
+            <output outputId="O31">STOCK</output>
+        </merge>
+        <merge>
+            <input inputId="I33" sourceId="S1">CURR_PRICE</input>
+            <input inputId="I34" sourceId="S2">CURR_PRICE</input>
+            <output outputId="O33">CURR_PRICE</output>
+        </merge>
+        <merge>
+            <input inputId="I35" sourceId="S1">OPEN</input>
+            <input inputId="I36" sourceId="S2">OPEN</input>
+            <output outputId="O35">OPEN</output>
+        </merge>
+        <merge>
+            <input inputId="I37" sourceId="S1">HIGH</input>
+            <input inputId="I38" sourceId="S2">HIGH</input>
+            <output outputId="O37">HIGH</output>
+        </merge>
+        <merge>
+            <input inputId="I39" sourceId="S1">LOW</input>
+            <input inputId="I40" sourceId="S2">LOW</input>
+            <output outputId="O39">LOW</output>
+        </merge>
+        <merge>
+            <input inputId="I41" sourceId="S1">PREV_CLOSE</input>
+            <input inputId="I42" sourceId="S2">PREV_CLOSE</input>
+            <output outputId="O41">PREV_CLOSE</output>
+        </merge>
+        <merge>
+            <input inputId="I43">O19</input>
+            <input inputId="I44">O29</input>
+            <output outputId="O43">RANGE</output>
+        </merge>
+        <merge>
+            <input inputId="I45">O200</input>
+            <input inputId="I46">O27</input>
+            <output outputId="O45">CHANGE_PER</output>
+        </merge>
+    </transformations>
+
+    <load>
+        
+        <db-load>
+            <database>MYSQL</database>
+            <hostname>localhost</hostname>
+            <username>root</username>
+            <password>root</password>
+            <database-name>stocks</database-name>
+            <table-name>stocks_table</table-name>
+            <output>
+                <field>
+                    <field-name>STOCK</field-name>
+                    <field-source>O31</field-source>
+                </field>
+                <field>
+                    <field-name>CURR_PRICE</field-name>
+                    <field-source>O33</field-source>
+                </field>
+                <field>
+                    <field-name>OPEN</field-name>
+                    <field-source>O35</field-source>
+                </field>
+                <field>
+                    <field-name>HIGH</field-name>
+                    <field-source>O37</field-source>
+                </field>
+                <field>
+                    <field-name>LOW</field-name>
+                    <field-source>O39</field-source>
+                </field>
+                <field>
+                    <field-name>PREV_CLOSE</field-name>
+                    <field-source>O41</field-source>
+                </field>
+                <field>
+                    <field-name>RANGE</field-name>
+                    <field-source>O43</field-source>
+                </field>
+                <field>
+                    <field-name>CHANGE_PER</field-name>
+                    <field-source>O45</field-source>
+                </field>
+            </output>
+        </db-load>
+        
+    </load>
+</etl>
